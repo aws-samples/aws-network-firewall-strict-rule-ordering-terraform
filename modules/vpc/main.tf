@@ -1,5 +1,5 @@
-// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-// SPDX-License-Identifier: MIT-0
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: MIT-0
 
 # --- vpc/main.tf ---
 
@@ -27,14 +27,19 @@ resource "aws_internet_gateway" "igw" {
   }
 }
 
+# Default Security Group
+# Ensuring that the default SG restricts all traffic (no ingress and egress rule). It is also not used in any resource
+resource "aws_default_security_group" "default_sg" {
+  vpc_id = aws_vpc.vpc.id
+}
+
 # SUBNETS
 # Public Subnets
 resource "aws_subnet" "vpc_public_subnets" {
-  count                   = var.number_azs
-  vpc_id                  = aws_vpc.vpc.id
-  cidr_block              = var.public_cidrs[count.index]
-  map_public_ip_on_launch = true
-  availability_zone       = data.aws_availability_zones.available.names[count.index]
+  count             = var.number_azs
+  vpc_id            = aws_vpc.vpc.id
+  cidr_block        = var.public_cidrs[count.index]
+  availability_zone = data.aws_availability_zones.available.names[count.index]
 
   tags = {
     Name = "public-subnet-${var.identifier}-${count.index + 1}"
@@ -172,30 +177,37 @@ resource "aws_route" "igw_to_inspection_route" {
   vpc_endpoint_id        = var.anfw_endpoints[count.index]
 }
 
-# SECURITY GROUPS
-resource "aws_security_group" "vpc_sg" {
+# SECURITY GROUPS (Instances and VPC Endpoints)
+resource "aws_security_group" "security_groups" {
   for_each    = var.security_groups
   name        = each.value.name
   description = each.value.description
   vpc_id      = aws_vpc.vpc.id
+
   dynamic "ingress" {
     for_each = each.value.ingress
     content {
+      description = ingress.value.description
       from_port   = ingress.value.from
       to_port     = ingress.value.to
       protocol    = ingress.value.protocol
       cidr_blocks = ingress.value.cidr_blocks
     }
   }
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+
+  dynamic "egress" {
+    for_each = each.value.egress
+    content {
+      description = egress.value.description
+      from_port   = egress.value.from
+      to_port     = egress.value.to
+      protocol    = egress.value.protocol
+      cidr_blocks = egress.value.cidr_blocks
+    }
   }
 
   tags = {
-    Name = "security-group-${var.identifier}-${each.value.name}"
+    Name = "security-group-${var.identifier}-${each.key}"
   }
 }
 
@@ -210,7 +222,9 @@ resource "aws_flow_log" "vpc_flowlog" {
 
 # CloudWatch Log Group
 resource "aws_cloudwatch_log_group" "flowlogs_lg" {
-  name = "lg-vpc-flowlogs-${var.identifier}"
+  name              = "lg-vpc-flowlogs-${var.identifier}"
+  retention_in_days = 7
+  kms_key_id        = var.kms_key
 }
 
 # IAM Role
@@ -242,7 +256,9 @@ data "aws_iam_policy_document" "policy_rolepolicy_document" {
       "logs:DescribeLogGroup",
       "logs:DescribeLogStreams"
     ]
-    resources = ["*"]
+    resources = [
+      "${aws_cloudwatch_log_group.flowlogs_lg.arn}",
+    ]
   }
 }
 

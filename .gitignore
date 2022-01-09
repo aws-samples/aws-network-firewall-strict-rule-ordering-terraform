@@ -9,9 +9,6 @@
 *.tfstate
 *.tfstate.*
 
-# Terraform Lock HCL
-.terraform.lock.hcl
-
 # Crash log files
 crash.log
 
@@ -46,3 +43,6 @@ terraform.rc
 
 # Project
 keys/
+
+# TFLINT
+.tflint.hcl

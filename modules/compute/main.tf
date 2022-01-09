@@ -1,5 +1,5 @@
-// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-// SPDX-License-Identifier: MIT-0
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: MIT-0
 
 # --- compute/main.tf ---
 
@@ -65,12 +65,22 @@ resource "aws_iam_policy_attachment" "ssm_iam_service_role_attachment" {
 
 # EC2 INSTACE(s) - 1 per Availability Zone
 resource "aws_instance" "ec2_instance" {
-  count                  = var.number_azs
-  ami                    = data.aws_ami.amazon_linux.id
-  instance_type          = var.instance_type
-  vpc_security_group_ids = var.instance_security_group
-  subnet_id              = var.private_subnets[count.index]
-  iam_instance_profile   = aws_iam_instance_profile.ec2_ssm_instance_profile.id
+  count                       = var.number_azs
+  ami                         = data.aws_ami.amazon_linux.id
+  associate_public_ip_address = false
+  instance_type               = var.instance_type
+  vpc_security_group_ids      = var.security_group
+  subnet_id                   = var.private_subnets[count.index]
+  iam_instance_profile        = aws_iam_instance_profile.ec2_ssm_instance_profile.id
+
+  metadata_options {
+    http_endpoint = "enabled"
+    http_tokens   = "required"
+  }
+
+  root_block_device {
+    encrypted = true
+  }
 
   tags = {
     Name = "instance-${count.index + 1}"

@@ -1,5 +1,5 @@
-// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-// SPDX-License-Identifier: MIT-0
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: MIT-0
 
 # --- firewall/main.tf ---
 
@@ -44,10 +44,14 @@ resource "aws_networkfirewall_logging_configuration" "anfw_logs" {
 
 # CloudWatch Log Group (FLOW)
 resource "aws_cloudwatch_log_group" "anfwlogs_lg_flow" {
-  name = "lg-anfwlogs-flow-${var.identifier}"
+  name              = "lg-anfwlogs-flow-${var.identifier}"
+  retention_in_days = 7
+  kms_key_id        = var.kms_key
 }
 
 # CloudWatch Log Group (ALERT)
 resource "aws_cloudwatch_log_group" "anfwlogs_lg_alert" {
-  name = "lg-anfwlogs-alert-${var.identifier}"
+  name              = "lg-anfwlogs-alert-${var.identifier}"
+  retention_in_days = 7
+  kms_key_id        = var.kms_key
 }
