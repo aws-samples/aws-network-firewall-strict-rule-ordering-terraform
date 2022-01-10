@@ -14,7 +14,7 @@ locals {
       name        = "instance_sg"
       description = "Security Group used in the instances"
       ingress = {
-        http = {
+        any = {
           description = "Any traffic"
           from        = 0
           to          = 0
