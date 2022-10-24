@@ -1,7 +1,7 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
 
-# --- firewall/policy.tf ---
+# --- root/policy.tf ---
 
 # AWS Network Firewall Policy (Strict Rule Ordering)
 # Default actions: DROP_ALL & ALERT_ALL

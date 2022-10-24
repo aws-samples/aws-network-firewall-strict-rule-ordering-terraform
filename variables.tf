@@ -11,10 +11,29 @@ variable "aws_region" {
 }
 
 # Project Identifier
-variable "project_identifier" {
+variable "identifier" {
   type        = string
   description = "Project Name, used as identifer when creating resources."
   default     = "anfw-strict-rule"
+}
+
+# CIDR Block
+variable "cidr_block" {
+  type        = string
+  description = "VPC's CIDR block."
+  default     = "10.0.0.0/24"
+}
+
+# Subnet CIDR Blocks
+variable "subnet_cidr_blocks" {
+  type = map(list(string))
+  description = "Subnet CIDR blocks."
+  default = {
+    inspection = ["10.0.0.0/28", "10.0.0.16/28", "10.0.0.32/28"]
+    public = ["10.0.0.48/28", "10.0.0.64/28", "10.0.0.80/28"]
+    private = ["10.0.0.96/28", "10.0.0.112/28", "10.0.0.128/28"]
+    endpoints = ["10.0.0.144/28", "10.0.0.160/28", "10.0.0.176/28"]
+  }
 }
 
 # Number of Availability Zones (AZs) to use. The default is 1, although 2 or more are recommended for high-availability

@@ -4,9 +4,6 @@
 # --- root/locals.tf ---
 
 locals {
-  # VPC CIDR
-  vpc_cidr = "10.151.0.0/16"
-
   # Security Groups (SGs) used by the EC2 instances ("instance") and VPC endpoints ("endpoints"). 
   # Feel free to change the instance SG (remember to change the firewall rules accordingly). The SG of the endpoints needs to allow HTTPS traffic for the SSM connection to work. 
   security_groups = {
@@ -19,7 +16,7 @@ locals {
           from        = 0
           to          = 0
           protocol    = "-1"
-          cidr_blocks = [local.vpc_cidr]
+          cidr_blocks = [var.cidr_block]
         }
       }
       egress = {
@@ -55,7 +52,7 @@ locals {
           from        = 443
           to          = 443
           protocol    = "tcp"
-          cidr_blocks = [local.vpc_cidr]
+          cidr_blocks = [var.cidr_block]
         }
       }
       egress = {
@@ -64,7 +61,7 @@ locals {
           from        = 0
           to          = 0
           protocol    = "-1"
-          cidr_blocks = [local.vpc_cidr]
+          cidr_blocks = [var.cidr_block]
         }
       }
     }

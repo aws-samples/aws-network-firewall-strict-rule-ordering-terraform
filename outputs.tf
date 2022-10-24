@@ -3,26 +3,33 @@
 
 # --- root/outputs.tf ---
 
-# List of EC2 instances created in this environment
-output "instances_created" {
-  value       = module.compute.instances_created
-  description = "List of EC2 instances created in this environment."
+output "vpc_id" {
+  description = "VPC ID."
+  value       = aws_vpc.vpc.id
 }
 
-# ARN of the AWS Network Firewall created
-output "anfw_arn" {
-  value       = module.firewall.anfw_name
-  description = "ARN of the AWS Network Firewall resource created."
+output "subnets" {
+  description = "Subnet IDs (per type)."
+  value = {
+    inspection = aws_subnet.vpc_inspection_subnets.*.id
+    public     = aws_subnet.vpc_public_subnets.*.id
+    private    = aws_subnet.vpc_private_subnets.*.id
+    endpoints  = aws_subnet.vpc_endpoints_subnets.*.id
+  }
 }
 
-# List of VPC endpoints created
-output "vpc_endpoints" {
-  value       = module.endpoints
-  description = "List of VPC endpoints created."
-}
+# output "route_tables" {
+#   description = "Route table IDs (per type)."
+#   value = {
+#     igw = 
+#     inspection =
+#     public = 
+#     private = 
+#     endpoints = 
+#   }
+# }
 
-# ARN of the KMS key created
-output "kms_key_arn" {
-  value       = module.kms.kms_arn
-  description = "ARN of the KMS key created."
+output "aws_network_firewall" {
+  description = "AWS Network Firewall ID."
+  value       = aws_networkfirewall_firewall.anfw.id
 }

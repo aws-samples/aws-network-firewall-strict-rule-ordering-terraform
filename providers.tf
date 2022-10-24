@@ -4,25 +4,24 @@
 # --- root/providers.tf ---
 
 terraform {
+  required_version = ">= 1.3.0"
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 3.71.0"
+      version = ">= 4.28.0"
+    }
+    awscc = {
+      source  = "hashicorp/awscc"
+      version = ">= 0.30.0"
     }
   }
-
-  required_version = "~> 1.1.2"
 }
 
-# AWS Provider configuration - AWS Region indicated in root/variables.tf
+# AWS/AWSCC Provider configuration - AWS Region indicated in root/variables.tf
 provider "aws" {
   region = var.aws_region
+}
 
-  default_tags {
-    tags = {
-      Project   = "AWS Network Firewall - Strict Rule Ordering Example"
-      Terraform = "Managed"
-      Region    = var.aws_region
-    }
-  }
+provider "awscc" {
+  region = var.aws_region
 }
