@@ -111,17 +111,27 @@ resource "aws_networkfirewall_rule_group" "allow_domains" {
   capacity = 100
   name     = "allow-domains-${var.identifier}"
   type     = "STATEFUL"
+
   rule_group {
+    rule_variables {
+      port_sets {
+        key = "HTTP_PORTS"
+        port_set {
+          definition = ["443", "80"]
+        }
+      }
+    }
+
     rules_source {
       rules_string = <<EOF
       alert http $HOME_NET any -> $EXTERNAL_NET 80 (http.host; dotprefix; content:".example.com"; endswith; msg:"Allowing example.com HTTP requests"; sid:892120; rev:1;)
       pass http $HOME_NET any -> $EXTERNAL_NET 80 (http.host; dotprefix; content:".example.com"; endswith; msg:"Allowing example.com HTTP requests"; sid:892121; rev:1;)
       alert tcp $HOME_NET any <> $EXTERNAL_NET 80 (msg:"Allowing TCP in port 80"; flow:not_established; sid:892122; rev:1;)
       pass tcp $HOME_NET any <> $EXTERNAL_NET 80 (msg:"Allowing TCP in port 80"; flow:not_established; sid:892123; rev:1;)
-      alert tls $HOME_NET any -> $EXTERNAL_NET 443 (tls.sni; dotprefix; content:".amazon.com"; endswith; msg:"Allowing .amazon.com HTTPS requests"; sid:892124; rev:1;)
-      pass tls $HOME_NET any -> $EXTERNAL_NET 443 (tls.sni; dotprefix; content:".amazon.com"; endswith; msg:"Allowing .amazon.com HTTPS requests"; sid:892125; rev:1;)
-      alert tcp $HOME_NET any <> $EXTERNAL_NET 443 (msg:"Allowing TCP in port 443"; flow:not_established; sid:892126; rev:1;)
-      pass tcp $HOME_NET any <> $EXTERNAL_NET 443 (msg:"Allowing TCP in port 443"; flow:not_established; sid:892127; rev:1;)
+      alert tls $HOME_NET any -> $EXTERNAL_NET $HTTP_PORTS (tls.sni; dotprefix; content:".amazon.com"; endswith; msg:"Allowing .amazon.com HTTPS requests"; sid:892124; rev:1;)
+      pass tls $HOME_NET any -> $EXTERNAL_NET $HTTP_PORTS (tls.sni; dotprefix; content:".amazon.com"; endswith; msg:"Allowing .amazon.com HTTPS requests"; sid:892125; rev:1;)
+      alert tcp $HOME_NET any <> $EXTERNAL_NET $HTTP_PORTS (msg:"Allowing TCP in port 443"; flow:not_established; sid:892126; rev:1;)
+      pass tcp $HOME_NET any <> $EXTERNAL_NET $HTTP_PORTS (msg:"Allowing TCP in port 443"; flow:not_established; sid:892127; rev:1;)
       EOF
     }
     stateful_rule_options {

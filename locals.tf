@@ -82,5 +82,10 @@ locals {
       type = "Interface"
     }
   }
+
+  # Getting the Internet gateway ID from the ARN obtained in the data source
+  igw_id = split("/", data.aws_internet_gateway.igw.arn)[1]
+  # Create a map of AZ -> subnet CIDR for the Network Firewall module
+  private_subnet_cidrs = tomap({ for i, az in module.vpc.azs : az => var.subnet_cidr_blocks.private[i] })
 }
 
