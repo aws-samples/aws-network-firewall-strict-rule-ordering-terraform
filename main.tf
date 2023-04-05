@@ -7,7 +7,7 @@
 # Amazon VPC - Module: https://registry.terraform.io/modules/aws-ia/vpc/aws/latest
 module "vpc" {
   source  = "aws-ia/vpc/aws"
-  version = "3.1.0"
+  version = "4.0.0"
 
   name       = "vpc-${var.identifier}"
   cidr_block = var.cidr_block
@@ -26,12 +26,12 @@ module "vpc" {
     vpc_endpoints = { cidrs = slice(var.subnet_cidr_blocks.endpoints, 0, var.number_azs) }
   }
 
-  # vpc_flow_logs = {
-  #   log_destination_type = "cloud-watch-logs"
-  #   retention_in_days = 7
-  #   iam_role_arn = aws_iam_role.vpc_flowlogs_role.arn
-  #   kms_key_id = aws_kms_key.log_key.arn
-  # }
+  vpc_flow_logs = {
+    log_destination_type = "cloud-watch-logs"
+    retention_in_days    = 7
+    iam_role_arn         = aws_iam_role.vpc_flowlogs_role.arn
+    kms_key_id           = aws_kms_key.log_key.arn
+  }
 }
 
 # We obtain the IGW ID from the VPC created
@@ -60,7 +60,7 @@ resource "aws_route_table_association" "vpc_igw_rt_assoc" {
 # AWS Network Firewall - Module: https://registry.terraform.io/modules/aws-ia/networkfirewall/aws/latest
 module "network_firewall" {
   source  = "aws-ia/networkfirewall/aws"
-  version = "0.0.2"
+  version = "0.1.1"
 
   network_firewall_name   = "anfw-${var.identifier}"
   network_firewall_policy = aws_networkfirewall_firewall_policy.anfw_policy.arn
@@ -76,27 +76,18 @@ module "network_firewall" {
       protected_subnet_cidr_blocks  = local.private_subnet_cidrs
     }
   }
-}
 
-# Logging Configuration
-resource "aws_networkfirewall_logging_configuration" "anfw_logs" {
-  firewall_arn = module.network_firewall.aws_network_firewall.arn
-
-  logging_configuration {
-    log_destination_config {
-      log_destination = {
-        logGroup = aws_cloudwatch_log_group.anfwlogs_lg_flow.name
+  logging_configuration = {
+    flow_log = {
+      cloudwatch_logs = {
+        logGroupName = aws_cloudwatch_log_group.anfwlogs_lg_flow.name
       }
-      log_destination_type = "CloudWatchLogs"
-      log_type             = "FLOW"
     }
 
-    log_destination_config {
-      log_destination = {
-        logGroup = aws_cloudwatch_log_group.anfwlogs_lg_alert.name
+    alert_log = {
+      cloudwatch_logs = {
+        logGroupName = aws_cloudwatch_log_group.anfwlogs_lg_alert.name
       }
-      log_destination_type = "CloudWatchLogs"
-      log_type             = "ALERT"
     }
   }
 }
