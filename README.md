@@ -68,20 +68,19 @@ This library is licensed under the MIT-0 License. See the [LICENSE](LICENSE) fil
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3.0 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 4.28.0 |
-| <a name="requirement_awscc"></a> [awscc](#requirement\_awscc) | >= 0.30.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.39.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.59.0 |
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_network_firewall"></a> [network\_firewall](#module\_network\_firewall) | aws-ia/networkfirewall/aws | 0.0.2 |
-| <a name="module_vpc"></a> [vpc](#module\_vpc) | aws-ia/vpc/aws | 3.1.0 |
+| <a name="module_network_firewall"></a> [network\_firewall](#module\_network\_firewall) | aws-ia/networkfirewall/aws | 0.1.1 |
+| <a name="module_vpc"></a> [vpc](#module\_vpc) | aws-ia/vpc/aws | 4.0.0 |
 
 ## Resources
 
@@ -97,7 +96,6 @@ This library is licensed under the MIT-0 License. See the [LICENSE](LICENSE) fil
 | [aws_instance.ec2_instance](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/instance) | resource |
 | [aws_kms_key.log_key](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kms_key) | resource |
 | [aws_networkfirewall_firewall_policy.anfw_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/networkfirewall_firewall_policy) | resource |
-| [aws_networkfirewall_logging_configuration.anfw_logs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/networkfirewall_logging_configuration) | resource |
 | [aws_networkfirewall_rule_group.allow_domains](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/networkfirewall_rule_group) | resource |
 | [aws_networkfirewall_rule_group.allow_icmp](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/networkfirewall_rule_group) | resource |
 | [aws_networkfirewall_rule_group.drop_remote](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/networkfirewall_rule_group) | resource |
@@ -127,7 +125,5 @@ This library is licensed under the MIT-0 License. See the [LICENSE](LICENSE) fil
 
 ## Outputs
 
-| Name | Description |
-|------|-------------|
-| <a name="output_variable"></a> [variable](#output\_variable) | --- root/outputs.tf --- |
+No outputs.
 <!-- END_TF_DOCS -->
