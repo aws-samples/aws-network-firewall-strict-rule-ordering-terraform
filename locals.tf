@@ -70,15 +70,15 @@ locals {
   # VPC Endpoints service names - used when creating the endpoints. If you want to add more VPC endpoints (Amazon S3, for example), include that information here.
   endpoint_service_names = {
     ssm = {
-      name = "com.amazonaws.eu-west-1.ssm"
+      name = "com.amazonaws.us-west-2.ssm"
       type = "Interface"
     }
     ssmmessages = {
-      name = "com.amazonaws.eu-west-1.ssmmessages"
+      name = "com.amazonaws.us-west-2.ssmmessages"
       type = "Interface"
     }
     ec2messages = {
-      name = "com.amazonaws.eu-west-1.ec2messages"
+      name = "com.amazonaws.us-west-2.ec2messages"
       type = "Interface"
     }
   }

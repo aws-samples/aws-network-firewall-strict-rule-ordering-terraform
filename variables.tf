@@ -7,7 +7,7 @@
 variable "aws_region" {
   type        = string
   description = "AWS Region to create the environment."
-  default     = "eu-west-1"
+  default     = "us-west-2"
 }
 
 # Project Identifier
@@ -42,7 +42,7 @@ variable "subnet_cidr_blocks" {
 variable "number_azs" {
   type        = number
   description = "Number of Availability Zones to create resources in the VPC."
-  default     = 1
+  default     = 3
 
   validation {
     condition     = var.number_azs > 0 && var.number_azs < 4

@@ -70,10 +70,18 @@ module "network_firewall" {
   vpc_subnets = { for k, v in module.vpc.private_subnet_attributes_by_az : split("/", k)[1] => v.id if split("/", k)[0] == "inspection" }
 
   routing_configuration = {
-    single_vpc = {
-      igw_route_table               = aws_route_table.vpc_igw_rt.id
-      protected_subnet_route_tables = { for k, v in module.vpc.rt_attributes_by_type_by_az.private : split("/", k)[1] => v.id if split("/", k)[0] == "workload" }
-      protected_subnet_cidr_blocks  = local.private_subnet_cidrs
+    intra_vpc_inspection = {
+      number_routes = 2
+      routes = [
+        {
+          source_subnet_route_tables     = { for k, v in module.vpc.rt_attributes_by_type_by_az.public : k => v.id }
+          destination_subnet_cidr_blocks = local.private_subnet_cidrs
+        },
+        {
+          source_subnet_route_tables     = { for k, v in module.vpc.rt_attributes_by_type_by_az.private : split("/", k)[1] => v.id if split("/", k)[0] == "workload" }
+          destination_subnet_cidr_blocks = { for k, v in module.vpc.rt_attributes_by_type_by_az.public : k => "0.0.0.0/0" }
+        }
+      ]
     }
   }
 
@@ -115,7 +123,7 @@ data "aws_ami" "amazon_linux" {
   filter {
     name = "name"
     values = [
-      "amzn-ami-hvm-*-x86_64-gp2",
+      "amzn2-ami-hvm-*-x86_64-gp2",
     ]
   }
 
